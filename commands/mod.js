@@ -10,12 +10,12 @@ module.exports = {
       // args[1] -> user
       // args[2] -> options
       case "ban": // Only for mods+
-        if (!message.member.permissions.has("BAN_MEMBERS")) return;
+        if (!message.member.permissions.has("BAN_MEMBERS") || message.mentions.members.size == 0) return;
         // Grab the user details
-        let member = message.mentions.members.first();
-        let user = member.user;
-        let reason = "";
-        let duration = 0;
+        var member = message.mentions.members.first();
+        var user = member.user;
+        var reason = "";
+        var duration = 0;
         // Ask for reason
         if (args[2] === undefined || args[2] !== "-f") {
           let filter = msg => msg.author.id == message.author.id;
@@ -39,19 +39,61 @@ module.exports = {
             url: "https://i0.kym-cdn.com/photos/images/original/000/065/301/banhammer_forecast.gif"
           },
           color: "#FF0000",
-          description: `User: ${user} (ID: ${user.id})\nDuration: ${duration == 0 || duration > 7 || isNaN(duration) ? "Forever" : duration + " days"}\nReason: ${reason == "" ? "No reason set yet" : reason}`,
+          description: `**User:** ${user} (ID: ${user.id})\n**Duration:** ${duration == 0 || duration > 7 || isNaN(duration) ? "Forever" : duration + " days"}\n**Reason:** ${reason == "" ? "No reason set yet" : reason}`,
           timestamp: new Date(),
           footer: {
-            text: "Case 0000"
+            text: "Case 0000 | Ban"
           }
         })
-        let channels = Client.channels.cache.filter(channel => channel.name == "support-bot");
+        var channels = Client.channels.cache.filter(channel => channel.name == "support-bot");
         await channels.forEach(channel => {
           channel.send(banEmbed);
         })
         // ban the user
+        member.ban({
+          days: duration,
+          reason: reason
+        })
         break;
       case "kick": // Only for mods+
+      console.log(message.mentions.members.size)
+        if (!message.member.permissions.has("KICK_MEMBERS") || message.mentions.members.size == 0) return;
+        // Details
+        var member = message.mentions.members.first();
+        var user = member.user;
+        var reason = "";
+        // Ask for reason
+        if (args[2] === undefined || args[2] !== "-f") {
+          let filter = msg => msg.author.id == message.author.id;
+          let msgReason = await message.reply("please provide a reason for the kick:");
+          await message.channel.awaitMessages(filter, {max: 1, time: 10000, errors: ['time']}).then(collected => {
+            reason = collected.first().content
+          }).catch(error => msgReason.edit("Case 0000 | No reason set, you can set the reason later."))
+        }
+        // Send the information to the log channel
+        let kickEmbed = new MessageEmbed({
+          author: {
+            name: `${message.member.displayName} (ID: ${message.author.id})`,
+            icon_url: `${message.author.displayAvatarURL()}`
+          },
+          image: {
+            url: "https://media.makeameme.org/created/kick-him-out-6g3pdp.jpg"
+          },
+          color: "#FF7F00",
+          description: `**User:** ${user} (ID: ${user.id})\n**Reason:** ${reason == "" ? "No reason set yet" : reason}`,
+          timestamp: new Date(),
+          footer: {
+            text: "Case 0000 | Kick"
+          }
+        })
+        var channels = Client.channels.cache.filter(channel => channel.name == "support-bot");
+        await channels.forEach(channel => {
+          channel.send(kickEmbed);
+        })
+        // kick the user
+        member.kick({
+          reason: reason
+        })
         break;
       case "dev": // For everyone
         break;
