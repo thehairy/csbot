@@ -1,0 +1,24 @@
+{
+  "name": "csbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "discord.js": "^12.3.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node .",
+    "eslint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thehairy/csbot.git"
+  },
+  "author": "Chewbacca",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thehairy/csbot/issues"
+  },
+  "homepage": "https://github.com/thehairy/csbot#readme"
+}
