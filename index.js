@@ -39,11 +39,26 @@ Client.on("message", (message) => {
   }
 })
 
-Client.on("guildBanAdd", (Guild, User) => {
-  // Fetch reason and stuff
-  // -
-  // Send message to log
-  // -
+Client.on("guildBanAdd", async (Guild, User) => {
+    let duration = "0";
+    let reason = "No reason set yet.";
+    let banEmbed = new Discord.MessageEmbed({
+      author: {
+        name: `Claim this ban and edit the reason.`
+      },
+      thumbnail: {
+        url: "https://i0.kym-cdn.com/photos/images/original/000/065/301/banhammer_forecast.gif"
+      },
+      color: "#FF0000",
+      description: `**User:** ${User.tag} (ID: ${User.id})\n**Duration:** ${duration == 0 || duration > 7 || isNaN(duration) ? "Forever" : duration + " days"}\n**Reason:** ${reason == "" ? "No reason set yet" : reason}`,
+      timestamp: new Date(),
+      footer: {
+        text: "Case 0000 | Ban"
+      }
+    })
+    Client.channels.cache.filter(channel => channel.name == "support-bot").forEach(ch => {
+      ch.send(banEmbed);
+    })
 })
 
 Client.login(Config.token);

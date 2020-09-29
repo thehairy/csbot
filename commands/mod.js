@@ -76,7 +76,7 @@ module.exports = {
             name: `${message.member.displayName} (ID: ${message.author.id})`,
             icon_url: `${message.author.displayAvatarURL()}`
           },
-          image: {
+          thumbnail: {
             url: "https://media.makeameme.org/created/kick-him-out-6g3pdp.jpg"
           },
           color: "#FF7F00",
@@ -96,14 +96,38 @@ module.exports = {
         })
         break;
       case "dev": // For everyone
+        var devEmbed = new MessageEmbed({
+          description: "Please check <#713363507785105419> if you have problems running your game. If you still have problems, please upload your 'output_log.txt' here and provide your 'DXDIAG informations'. How to access both is described in <#615545764663263278>.",
+          thumbnail: {
+            url: "https://files.thehairy.org/cslady.png"
+          }
+        })
+        message.channel.send(devEmbed);
         break;
       case "bug": // For everyone
-        break;
-      case "faq": // For everyone
+        var bugEmbed = new MessageEmbed({
+          description: "",
+          thumbnail: {
+            url: "https://files.thehairy.org/csbug.png"
+          }
+        })
+        message.channel.send(bugEmbed);
         break;
       case "setReason": // Only for mods+
         break;
       case "setDuration": // Only for mods+
+        break;
+      case "test":
+        setTimeout(() => {
+          message.client.channels.cache.find(c => c.name == 'ad').send({
+                  embed: new MessageEmbed().setTitle("test")
+              })
+              .then(() => {
+                  console.log('Done.')
+                  message.member.send(new MessageEmbed().setTitle(`Ticket #${1 + 1} was sent to staff succesfully!`).setColor('GREEN').setTimestamp());
+              }).catch(err => console.log(err));
+          message.client.channels.cache.find(c => c.name == 'ad').send(`<@&755880817468637246> <@&755888092652765286>`);
+        }, 3000);
         break;
     }
 	},
