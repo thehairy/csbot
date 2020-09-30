@@ -16,18 +16,20 @@ module.exports = {
         var user = member.user;
         var reason = "";
         var duration = 0;
+        if (!member || !member.bannable) return;
+        if (message.member.roles.highest.position < member.roles.highest.position) return;
         // Ask for reason
         if (args[2] === undefined || args[2] !== "-f") {
           let filter = msg => msg.author.id == message.author.id;
           let msgReason = await message.reply("please provide a reason for the ban:");
           await message.channel.awaitMessages(filter, {max: 1, time: 10000, errors: ['time']}).then(collected => {
             reason = collected.first().content;
-          }).catch(error => msgReason.edit("Case 0000 | No reason set, you can set the reason later."));
+          }).catch(error => msgReason.edit("Case: 404 | No reason set, you can set the reason later."));
           // Ask for duration
           msgReason = await message.reply("please provide a duration for the ban (0 - 7):");
           await message.channel.awaitMessages(filter, {max: 1, time: 10000, errors: ['time']}).then(collected => {
             duration = collected.first().content == "0" ? 0 : parseInt(collected.first().content) > 7 ? 0 : parseInt(collected.first().content);
-          }).catch(error => msgReason.edit("Case 0000 | No duration set, you can set the duration later."));
+          }).catch(error => msgReason.edit("Case: 404 | No duration set, you can set the duration later."));
         }
         // Send the information to the log channel
         let banEmbed = new MessageEmbed({
@@ -42,7 +44,7 @@ module.exports = {
           description: `**User:** ${user} (ID: ${user.id})\n**Duration:** ${duration == 0 || duration > 7 || isNaN(duration) ? "Forever" : duration + " days"}\n**Reason:** ${reason == "" ? "No reason set yet" : reason}`,
           timestamp: new Date(),
           footer: {
-            text: "Case 0000 | Ban"
+            text: "Case 404 | Ban"
           }
         })
         var channels = Client.channels.cache.filter(channel => channel.name == "support-bot");
@@ -50,25 +52,30 @@ module.exports = {
           channel.send(banEmbed);
         })
         // ban the user
-        member.ban({
+        await member.send(`You got banned from the discord \`${message.guild.name}\` for \`${duration == 0 || duration > 7 || isNaN(duration) ? "unlimited" : duration} days\`. You got banned because \`${reason == "" ? "No reason set" : reason}\`.`)
+        await member.ban({
           days: duration,
           reason: reason
-        })
+        }).catch()
+        message.channel.send('User successfully banned.');
         break;
       case "kick": // Only for mods+
-      console.log(message.mentions.members.size)
         if (!message.member.permissions.has("KICK_MEMBERS") || message.mentions.members.size == 0) return;
         // Details
         var member = message.mentions.members.first();
         var user = member.user;
         var reason = "";
+        console.log(member.kickable)
+        if (!member || !member.kickable) return;
+        console.log(message.member.roles.highest.position < member.roles.highest.position)
+        if (message.member.roles.highest.position < member.roles.highest.position) return;
         // Ask for reason
         if (args[2] === undefined || args[2] !== "-f") {
           let filter = msg => msg.author.id == message.author.id;
           let msgReason = await message.reply("please provide a reason for the kick:");
           await message.channel.awaitMessages(filter, {max: 1, time: 10000, errors: ['time']}).then(collected => {
             reason = collected.first().content
-          }).catch(error => msgReason.edit("Case 0000 | No reason set, you can set the reason later."))
+          }).catch(error => msgReason.edit("Case 404 | No reason set, you can set the reason later."))
         }
         // Send the information to the log channel
         let kickEmbed = new MessageEmbed({
@@ -83,7 +90,7 @@ module.exports = {
           description: `**User:** ${user} (ID: ${user.id})\n**Reason:** ${reason == "" ? "No reason set yet" : reason}`,
           timestamp: new Date(),
           footer: {
-            text: "Case 0000 | Kick"
+            text: "Case 404 | Kick"
           }
         })
         var channels = Client.channels.cache.filter(channel => channel.name == "support-bot");
@@ -91,43 +98,61 @@ module.exports = {
           channel.send(kickEmbed);
         })
         // kick the user
-        member.kick({
+        await member.send(`You got kicked from \`${message.guild.name}\` for \`${reason}\`.`);
+        ok = true;
+        await member.kick({
           reason: reason
-        })
+        }).catch(ok = false)
+        if (ok) {
+          message.channel.send('User successfully kicked.')
+        } else {
+          message.reply(`you wasted memory, it didn't work.`);
+        }
         break;
       case "dev": // For everyone
-        var devEmbed = new MessageEmbed({
-          description: "Please check <#713363507785105419> if you have problems running your game. If you still have problems, please upload your 'output_log.txt' here and provide your 'DXDIAG informations'. How to access both is described in <#615545764663263278>.",
+        let devEmbed = new MessageEmbed({
           thumbnail: {
             url: "https://files.thehairy.org/cslady.png"
-          }
+          },
+          description: "Please check <#713363507785105419> if you have problems running your game. If you still have problems, please upload your 'output_log.txt' here and provide your 'DXDIAG informations'. How to access both is described in <#615545764663263278>.",
         })
-        message.channel.send(devEmbed);
+        message.channel.send({
+          embed: devEmbed
+        });
         break;
       case "bug": // For everyone
-        var bugEmbed = new MessageEmbed({
-          description: "",
+        let bugEmbed = new MessageEmbed({
           thumbnail: {
             url: "https://files.thehairy.org/csbug.png"
-          }
+          },
+          title: `How to report a bug`,
+          description: `If you want to report a bug, please provide as much details as possible. Also please upload your output_log.txt and your dxdiag.txt. How to find them is explained in <#615545764663263278>.`,
         })
         message.channel.send(bugEmbed);
+        break;
+      case "faq":
+        let faqEmbed = new MessageEmbed({
+          thumbnail: {
+            url: "https://files.thehairy.org/csfaq.png"
+          },
+          title: `The majestic FAQ`,
+          description: `Before making any suggestions, please first read the FAQ provided in <#587658747220983817> and try to not suggest stuff that is already mentioned there.`
+        })
+        message.channel.send(faqEmbed)
+        break;
+      case "switch":
+        let switchEmbed = new MessageEmbed({
+          thumbnail: {
+            url: "https://files.thehairy.org/foreverentertainment.png"
+          },
+          title: `Switch Support`,
+          description: `We do not provide technical support for the Switch version of the game. For technical issues, please reach out to [Forever Entertainment](https://thehairy.org).\nIf you have questions regarding the gameplay, you can ask in the appropriate channel or in <#586181771259936769>.`
+        })
+        message.channel.send(switchEmbed)
         break;
       case "setReason": // Only for mods+
         break;
       case "setDuration": // Only for mods+
-        break;
-      case "test":
-        setTimeout(() => {
-          message.client.channels.cache.find(c => c.name == 'ad').send({
-                  embed: new MessageEmbed().setTitle("test")
-              })
-              .then(() => {
-                  console.log('Done.')
-                  message.member.send(new MessageEmbed().setTitle(`Ticket #${1 + 1} was sent to staff succesfully!`).setColor('GREEN').setTimestamp());
-              }).catch(err => console.log(err));
-          message.client.channels.cache.find(c => c.name == 'ad').send(`<@&755880817468637246> <@&755888092652765286>`);
-        }, 3000);
         break;
     }
 	},
