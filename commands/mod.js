@@ -146,13 +146,15 @@ module.exports = {
             url: "https://files.thehairy.org/foreverentertainment.png"
           },
           title: `Switch Support`,
-          description: `We do not provide technical support for the Switch version of the game. For technical issues, please reach out to [Forever Entertainment](https://thehairy.org).\nIf you have questions regarding the gameplay, you can ask in the appropriate channel or in <#586181771259936769>.`
+          description: `We do not provide technical support for the Switch version of the game. For technical support, please reach out to [Forever Entertainment](https://thehairy.org/redirect/forevent.php).\nIf you have questions regarding the gameplay, you can ask in the appropriate channel or in <#586181771259936769>.`
         })
         message.channel.send(switchEmbed)
         break;
       case "setReason": // Only for mods+
+        // TODO: Implement database so that this command can work.
         break;
       case "setDuration": // Only for mods+
+        // TODO: Implement database so that this command can work.
         break;
     }
 	},

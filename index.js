@@ -5,6 +5,7 @@ const FS = require("fs");
 const Prefix = "?";
 const Client = new Discord.Client();
 Client.commands = new Discord.Collection();
+Client.badwords = require("./badwords.json").badwords // so is jz iwie nen array
 
 const CommandFiles = FS.readdirSync("./commands").filter(file => file.endsWith(".js"));
 for (const File of CommandFiles) {
@@ -24,6 +25,11 @@ Client.on("ready", () => {
 })
 
 Client.on("message", (message) => {
+  // Badword filter
+  if(Client.badwords.some(word => message.content.toLowerCase().includes(word.toLowerCase()))){
+    message.delete({ reason: "Badword" });
+    return;
+  }
   // Check if message was send in DMs or comes from a bot
   if (message.author.bot || message.channel.type == "dm" || !message.content.startsWith(Prefix)) return;
 
