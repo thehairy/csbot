@@ -56,7 +56,7 @@ module.exports = {
         await member.ban({
           days: duration,
           reason: reason
-        }).catch()
+        })
         message.channel.send('User successfully banned.');
         break;
       case "kick": // Only for mods+
@@ -99,15 +99,10 @@ module.exports = {
         })
         // kick the user
         await member.send(`You got kicked from \`${message.guild.name}\` for \`${reason}\`.`);
-        ok = true;
         await member.kick({
           reason: reason
-        }).catch(ok = false)
-        if (ok) {
-          message.channel.send('User successfully kicked.')
-        } else {
-          message.reply(`you wasted memory, it didn't work.`);
-        }
+        })
+        message.channel.send('User successfully kicked.')
         break;
       case "dev": // For everyone
         let devEmbed = new MessageEmbed({
