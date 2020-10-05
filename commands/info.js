@@ -58,7 +58,7 @@ module.exports = {
                 },
                 {
                     name: 'Roles',
-                    value: rolesString.replace('<&@everyone>', '')
+                    value: rolesString.replace('<&@everyone>', '') == '' ? 'None' : rolesString.replace('<&@everyone>', '`None`')
                 },
                 {
                     name: 'Avatar',
