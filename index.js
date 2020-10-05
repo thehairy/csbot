@@ -45,7 +45,7 @@ Client.on("message", (message) => {
   }
 })
 
-Client.on("guildBanAdd", async (Guild, User) => {
+/*Client.on("guildBanAdd", async (Guild, User) => {
     let duration = "0";
     let reason = "No reason set yet.";
     let banEmbed = new Discord.MessageEmbed({
@@ -65,6 +65,6 @@ Client.on("guildBanAdd", async (Guild, User) => {
     Client.channels.cache.filter(channel => channel.name == "support-bot").forEach(ch => {
       ch.send(banEmbed);
     })
-})
+})*/
 
 Client.login(Config.token);
