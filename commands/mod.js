@@ -47,7 +47,7 @@ module.exports = {
             text: "Case 404 | Ban"
           }
         })
-        var channels = Client.channels.cache.filter(channel => channel.name == "support-bot");
+        var channels = Client.channels.cache.filter(channel => channel.guild.name.includes('cooking') && channel.name.includes("support-bot"));
         await channels.forEach(channel => {
           channel.send(banEmbed);
         })
@@ -93,7 +93,7 @@ module.exports = {
             text: "Case 404 | Kick"
           }
         })
-        var channels = Client.channels.cache.filter(channel => channel.name == "support-bot");
+        var channels = Client.channels.cache.filter(channel => channel.guild.name.includes('cooking') && channel.name.includes("support-bot"));
         await channels.forEach(channel => {
           channel.send(kickEmbed);
         })
